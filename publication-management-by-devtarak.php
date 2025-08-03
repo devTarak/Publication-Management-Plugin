@@ -162,7 +162,12 @@ function display_publication_pdf($content) {
     if (is_singular('publication')) {
         $pdf_url = get_post_meta(get_the_ID(), '_publication_pdf', true);
         if ($pdf_url) {
-            $content .= '<div class="publication-pdf"><a href="' . esc_url($pdf_url) . '" target="_blank">Download PDF</a></div>';
+            $content .= '
+                <div class="publication-pdf">
+                    <a href="' . esc_url($pdf_url) . '" class="button" download target="_blank" style="margin-bottom:10px;display:inline-block;">Download PDF</a>
+                    <iframe src="' . esc_url($pdf_url) . '" width="100%" height="1000px" style="border:1px solid #ccc; margin-top:10px; margin-bottom:50px"></iframe>
+                </div>
+            ';
         }
     }
     return $content;
