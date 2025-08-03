@@ -5,6 +5,8 @@
 get_header();
  // Include header
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 if (have_posts()) : ?>
     <div class="publication-archive">
         <div class="Titleofpublication"><h3>Publications</h3></div>
@@ -13,7 +15,7 @@ if (have_posts()) : ?>
         while (have_posts()) : the_post();
             ?>
             <div class="publication-item">
-                <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+                <h3><a href="<?php the_permalink(); ?>"><?php echo esc_html( get_the_title() ); ?></a></h3>
             </div>
             <?php
         endwhile;
@@ -24,8 +26,8 @@ if (have_posts()) : ?>
             <?php
             the_posts_pagination(array(
                 'mid_size' => 2,
-                'prev_text' => __('Previous'),
-                'next_text' => __('Next'),
+                'prev_text' => __('Previous', 'publication-management-by-devtarak'),
+                'next_text' => __('Next', 'publication-management-by-devtarak'),
             ));
             ?>
         </div>
