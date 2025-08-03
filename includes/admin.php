@@ -20,8 +20,10 @@ function pmdbt_publication_pdf_meta_box_callback($post) {
     $pdf_url = get_post_meta($post->ID, '_publication_pdf', true);
     ?>
     <label for="publication_pdf_link"><?php esc_html_e('Select PDF:', 'publication-management-by-devtarak'); ?></label>
+    <?php wp_nonce_field('save_publication_pdf', 'publication_pdf_nonce'); ?>
     <input type="text" id="publication_pdf_link" name="publication_pdf" value="<?php echo esc_attr($pdf_url); ?>" style="width:80%;"/>
     <button type="button" class="button" id="publication_pdf_button"><?php esc_html_e('Select PDF', 'publication-management-by-devtarak'); ?></button>
+
     <div id="publication_pdf_preview">
         <?php if ($pdf_url) : ?>
             <p><strong><?php esc_html_e('Current PDF:', 'publication-management-by-devtarak'); ?></strong> <a href="<?php echo esc_url($pdf_url); ?>" target="_blank"><?php echo esc_html(basename($pdf_url)); ?></a></p>
@@ -59,9 +61,10 @@ function pmdbt_publication_pdf_meta_box_callback($post) {
     </script>
     <?php
 }
-// Display a custom message on the post edit page when PDF is not uploaded
 function publication_publish_warning_message() {
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended
     if (isset($_GET['message']) && $_GET['message'] == 1) {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         $post_id = isset($_GET['post']) ? intval($_GET['post']) : 0;
         $pdf_url = $post_id ? get_post_meta($post_id, '_publication_pdf', true) : '';
         if (empty($pdf_url)) {

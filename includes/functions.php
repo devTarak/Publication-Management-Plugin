@@ -64,11 +64,24 @@ function check_publication_pdf_before_publish($post_id) {
         return $post_id;
     }
 
+    // Check nonce for security
+    if (
+        !isset($_POST['publication_pdf_nonce']) ||
+        !wp_verify_nonce(
+            sanitize_text_field(wp_unslash($_POST['publication_pdf_nonce'])),
+            'save_publication_pdf'
+        )
+    ) {
+        return $post_id; // Exit if nonce verification fails
+    }
+
     // Only check when publishing or updating
     if (isset($_POST['post_status']) && $_POST['post_status'] === 'publish') {
-        // Prefer submitted value, but fall back to saved meta
-        $pdf_url = isset($_POST['publication_pdf']) ? trim($_POST['publication_pdf']) : '';
+        // Sanitize and unslash the input before using it
+        $pdf_url = isset($_POST['publication_pdf']) ? sanitize_text_field(wp_unslash($_POST['publication_pdf'])) : '';
+
         if (empty($pdf_url)) {
+            // Fallback to existing post meta if input is empty
             $pdf_url = get_post_meta($post_id, '_publication_pdf', true);
         }
 
@@ -86,6 +99,7 @@ function check_publication_pdf_before_publish($post_id) {
             exit;
         }
     }
+
     return $post_id;
 }
 add_action('save_post', 'check_publication_pdf_before_publish');
@@ -122,11 +136,3 @@ function pmdbt_enqueue_archive_styles() {
     }
 }
 add_action('wp_enqueue_scripts', 'pmdbt_enqueue_archive_styles');
-
-// Enqueue custom JavaScript for the publication post type
-function pmdbt_enqueue_scripts($hook) {
-    if ('post.php' === $hook || 'post-new.php' === $hook) {
-        wp_enqueue_script('pmdbt-custom-script', plugin_dir_url(__FILE__) . '../assets/js/script.js', array('jquery'), '1.0', true);
-    }
-}
-add_action('admin_enqueue_scripts', 'pmdbt_enqueue_scripts');
