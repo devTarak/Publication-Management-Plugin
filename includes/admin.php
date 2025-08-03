@@ -53,6 +53,7 @@ function pmdbt_publication_pdf_meta_box_callback($post) {
             mediaUploader.on('select', function() {
                 var attachment = mediaUploader.state().get('selection').first().toJSON();
                 $('#publication_pdf_link').val(attachment.url);
+                $('#publication_pdf_link').prop('readonly', true);
                 $('#publication_pdf_preview').html('<p><strong><?php echo esc_js(__('Current PDF:', 'publication-management-by-devtarak')); ?></strong> <a href="' + attachment.url + '" target="_blank">' + attachment.filename + '</a></p>');
             });
             mediaUploader.open();

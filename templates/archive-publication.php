@@ -14,18 +14,20 @@ if ( have_posts() ) : ?>
         <div class="title-of-publication">
             <h3>Publications</h3>
         </div>
-
+        <ul class="publication-list">
         <?php
         // Loop through publications
         while ( have_posts() ) : the_post();
             ?>
+            <li>
             <div class="publication-item">
                 <h3><a href="<?php the_permalink(); ?>"><?php echo esc_html( get_the_title() ); ?></a></h3>
             </div>
+            </li>
             <?php
         endwhile;
         ?>
-
+        </ul>
         <!-- Pagination -->
         <div class="pagination">
             <?php
