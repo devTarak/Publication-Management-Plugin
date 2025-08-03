@@ -52,6 +52,29 @@ function add_publication_pdf_meta_box() {
 }
 add_action('add_meta_boxes', 'add_publication_pdf_meta_box');
 
+// Modify the query for the publication archive page for pagination
+function modify_publication_archive_query($query) {
+    if (is_post_type_archive('publication') && $query->is_main_query()) {
+        $query->set('posts_per_page', 20); // Set 20 publications per page
+    }
+}
+add_action('pre_get_posts', 'modify_publication_archive_query');
+
+// Load custom archive template for 'publication' post type
+function load_custom_publication_archive_template($template) {
+    if (is_post_type_archive('publication')) {
+        // Set the path to the custom archive template
+        $plugin_template = plugin_dir_path(__FILE__) . 'templates/archive-publication.php';
+
+        // Check if the custom template file exists
+        if (file_exists($plugin_template)) {
+            return $plugin_template;
+        }
+    }
+    return $template;
+}
+add_filter('template_include', 'load_custom_publication_archive_template');
+
 // Meta Box Callback to display the PDF upload option (for editing)
 function publication_pdf_meta_box_callback($post) {
     // Retrieve the current PDF URL
@@ -109,9 +132,6 @@ function save_publication_pdf($post_id) {
     if (isset($_POST['publication_pdf'])) {
         $pdf_url = sanitize_text_field($_POST['publication_pdf']);
 
-        // Debugging: Log PDF URL
-        error_log('Saving PDF URL: ' . $pdf_url); // This will log the saved PDF URL in the debug log
-
         // Check if the PDF URL is not empty and save it
         if (!empty($pdf_url)) {
             update_post_meta($post_id, '_publication_pdf', $pdf_url);
@@ -164,7 +184,6 @@ function display_publication_pdf($content) {
         if ($pdf_url) {
             $content .= '
                 <div class="publication-pdf">
-                    <a href="' . esc_url($pdf_url) . '" class="button" download target="_blank" style="margin-bottom:10px;display:inline-block;">Download PDF</a>
                     <iframe src="' . esc_url($pdf_url) . '" width="100%" height="1000px" style="border:1px solid #ccc; margin-top:10px; margin-bottom:50px"></iframe>
                 </div>
             ';
